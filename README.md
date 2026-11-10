@@ -1,4 +1,4 @@
-# PHC Connect
+# PHC Connect — Queue Management Demo
 
 PHC Connect is a browser-based prototype for managing patient queues at a Primary Health Centre (PHC). It simulates:
 
