@@ -1,33 +1,25 @@
 /**
- * PHC CONNECT - Complete JavaScript System
- * Primary Health Centre Queue Management
- * Version: 1.0.0
+ * PHC CONNECT - Demo JavaScript System
+ * Primary Health Centre Queue Management Prototype
+ * Public-facing demo version: no real authentication or patient records
  */
 
-// ========== APP STATE MANAGEMENT ==========
 const PHCApp = {
-    // Data storage
     appointments: [],
     doctors: [
         { id: 'doc1', name: 'Dr. Sharma', department: 'Medicine', prefix: 'MED', color: '#1e3c72' },
         { id: 'doc2', name: 'Dr. Patil', department: 'Pediatrics', prefix: 'PED', color: '#2a5298' },
         { id: 'doc3', name: 'Dr. Rao', department: 'General', prefix: 'GEN', color: '#ffd966' }
     ],
-    
-    // Token counters per doctor prefix
+
     tokenCounters: {
         MED: 8,
         PED: 5,
         GEN: 7
     },
-    
-    // Admin authentication state
+
     isAdminLoggedIn: false,
-    
-    // Current date for appointments
     currentDate: new Date().toISOString().split('T')[0],
-    
-    // Time slots available
     timeSlots: [
         '9:00 AM - 9:15 AM',
         '9:15 AM - 9:30 AM',
@@ -40,31 +32,20 @@ const PHCApp = {
     ]
 };
 
-// ========== INITIALIZATION ==========
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('PHC Connect Initializing...');
-    
-    // Load data from localStorage
+    console.log('PHC Connect demo initializing...');
     loadFromStorage();
-    
-    // If no data exists, initialize with demo data
+
     if (PHCApp.appointments.length === 0) {
         initializeDemoData();
     }
-    
-    // Set up all event listeners
+
     setupEventListeners();
-    
-    // Initialize UI
     initializeUI();
-    
-    // Start auto-refresh for TV display
     startTVRefresh();
-    
-    console.log('PHC Connect Ready!');
+    console.log('PHC Connect demo ready.');
 });
 
-// ========== DATA PERSISTENCE ==========
 function saveToStorage() {
     try {
         const dataToSave = {
@@ -72,7 +53,6 @@ function saveToStorage() {
             tokenCounters: PHCApp.tokenCounters
         };
         localStorage.setItem('phcConnectData', JSON.stringify(dataToSave));
-        console.log('Data saved to storage');
     } catch (error) {
         console.error('Error saving to storage:', error);
         showNotification('⚠️ Error saving data', 'error');
@@ -86,108 +66,108 @@ function loadFromStorage() {
             const parsed = JSON.parse(savedData);
             PHCApp.appointments = parsed.appointments || [];
             PHCApp.tokenCounters = parsed.tokenCounters || {
-                MED: 8, PED: 5, GEN: 7
+                MED: 8,
+                PED: 5,
+                GEN: 7
             };
-            console.log('Data loaded from storage');
         }
     } catch (error) {
         console.error('Error loading from storage:', error);
     }
 }
 
-// ========== DEMO DATA INITIALIZATION ==========
 function initializeDemoData() {
     PHCApp.appointments = [
-        { 
-            id: 'MED001', 
-            patientName: 'Sarah Johnson', 
-            patientPhone: '9876543210',
-            doctor: 'Dr. Sharma', 
-            department: 'Medicine', 
+        {
+            id: 'MED001',
+            patientName: 'Demo Patient 01',
+            patientPhone: '+91 90000 00001',
+            doctor: 'Dr. Sharma',
+            department: 'Medicine',
             timeSlot: '9:00 AM - 9:15 AM',
             date: PHCApp.currentDate,
             status: 'with-doctor',
             tokenPrefix: 'MED',
             createdAt: new Date().toISOString()
         },
-        { 
-            id: 'MED002', 
-            patientName: 'Mike Chen', 
-            patientPhone: '8765432109',
-            doctor: 'Dr. Sharma', 
-            department: 'Medicine', 
+        {
+            id: 'MED002',
+            patientName: 'Demo Patient 02',
+            patientPhone: '+91 90000 00002',
+            doctor: 'Dr. Sharma',
+            department: 'Medicine',
             timeSlot: '9:15 AM - 9:30 AM',
             date: PHCApp.currentDate,
             status: 'waiting',
             tokenPrefix: 'MED',
             createdAt: new Date().toISOString()
         },
-        { 
-            id: 'MED003', 
-            patientName: 'Priya Patel', 
-            patientPhone: '7654321098',
-            doctor: 'Dr. Sharma', 
-            department: 'Medicine', 
+        {
+            id: 'MED003',
+            patientName: 'Demo Patient 03',
+            patientPhone: '+91 90000 00003',
+            doctor: 'Dr. Sharma',
+            department: 'Medicine',
             timeSlot: '9:30 AM - 9:45 AM',
             date: PHCApp.currentDate,
             status: 'waiting',
             tokenPrefix: 'MED',
             createdAt: new Date().toISOString()
         },
-        { 
-            id: 'PED004', 
-            patientName: 'Raj Kumar', 
-            patientPhone: '6543210987',
-            doctor: 'Dr. Patil', 
-            department: 'Pediatrics', 
+        {
+            id: 'PED004',
+            patientName: 'Demo Patient 04',
+            patientPhone: '+91 90000 00004',
+            doctor: 'Dr. Patil',
+            department: 'Pediatrics',
             timeSlot: '9:00 AM - 9:15 AM',
             date: PHCApp.currentDate,
             status: 'waiting',
             tokenPrefix: 'PED',
             createdAt: new Date().toISOString()
         },
-        { 
-            id: 'PED005', 
-            patientName: 'Lakshmi Devi', 
-            patientPhone: '5432109876',
-            doctor: 'Dr. Patil', 
-            department: 'Pediatrics', 
+        {
+            id: 'PED005',
+            patientName: 'Demo Patient 05',
+            patientPhone: '+91 90000 00005',
+            doctor: 'Dr. Patil',
+            department: 'Pediatrics',
             timeSlot: '9:15 AM - 9:30 AM',
             date: PHCApp.currentDate,
             status: 'waiting',
             tokenPrefix: 'PED',
             createdAt: new Date().toISOString()
         },
-        { 
-            id: 'GEN006', 
-            patientName: 'Arun Singh', 
-            patientPhone: '4321098765',
-            doctor: 'Dr. Rao', 
-            department: 'General', 
+        {
+            id: 'GEN006',
+            patientName: 'Demo Patient 06',
+            patientPhone: '+91 90000 00006',
+            doctor: 'Dr. Rao',
+            department: 'General',
             timeSlot: '9:00 AM - 9:15 AM',
             date: PHCApp.currentDate,
             status: 'completed',
             tokenPrefix: 'GEN',
             createdAt: new Date().toISOString()
         },
-        { 
-            id: 'GEN007', 
-            patientName: 'Meera Nair', 
-            patientPhone: '3210987654',
-            doctor: 'Dr. Rao', 
-            department: 'General', 
+        {
+            id: 'GEN007',
+            patientName: 'Demo Patient 07',
+            patientPhone: '+91 90000 00007',
+            doctor: 'Dr. Rao',
+            department: 'General',
             timeSlot: '9:15 AM - 9:30 AM',
             date: PHCApp.currentDate,
             status: 'waiting',
             tokenPrefix: 'GEN',
             createdAt: new Date().toISOString()
         },
-        { 
-            id: 'MED008', 
-            patientName: 'Karthik G', 
-            patientPhone: '2109876543',
-            doctor: 'Dr. Sharma', 
-            department: 'Medicine', 
+        {
+            id: 'MED008',
+            patientName: 'Demo Patient 08',
+            patientPhone: '+91 90000 00008',
+            doctor: 'Dr. Sharma',
+            department: 'Medicine',
             timeSlot: '9:45 AM - 10:00 AM',
             date: PHCApp.currentDate,
             status: 'waiting',
@@ -195,49 +175,34 @@ function initializeDemoData() {
             createdAt: new Date().toISOString()
         }
     ];
-    
-    // Update token counters based on demo data
+
     PHCApp.tokenCounters = {
         MED: 8,
         PED: 5,
         GEN: 7
     };
-    
+
     saveToStorage();
-    console.log('Demo data initialized');
 }
 
-// ========== EVENT LISTENERS SETUP ==========
 function setupEventListeners() {
-    // Navigation
     document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            const viewName = this.getAttribute('onclick')?.match(/'([^']+)'/)?.[1];
-            if (viewName) {
-                showView(viewName);
-            }
+        btn.addEventListener('click', function() {
+            const viewName = this.textContent.trim().includes('Patient') ? 'patient' :
+                this.textContent.trim().includes('Admin') ? 'admin' : 'tv';
+            showView(viewName);
         });
     });
-    
-    // Patient booking form
+
     const bookBtn = document.querySelector('.btn[onclick="bookAppointment()"]');
-    if (bookBtn) {
-        bookBtn.addEventListener('click', bookAppointment);
-    }
-    
-    // Token tracking
+    if (bookBtn) bookBtn.addEventListener('click', bookAppointment);
+
     const trackBtn = document.querySelector('.btn[onclick="trackToken()"]');
-    if (trackBtn) {
-        trackBtn.addEventListener('click', trackToken);
-    }
-    
-    // Admin login
+    if (trackBtn) trackBtn.addEventListener('click', trackToken);
+
     const loginBtn = document.querySelector('.btn[onclick="adminLogin()"]');
-    if (loginBtn) {
-        loginBtn.addEventListener('click', adminLogin);
-    }
-    
-    // Enter key for admin password
+    if (loginBtn) loginBtn.addEventListener('click', adminLogin);
+
     const passwordField = document.getElementById('adminPassword');
     if (passwordField) {
         passwordField.addEventListener('keypress', function(e) {
@@ -246,21 +211,17 @@ function setupEventListeners() {
             }
         });
     }
-    
-    // Date input set to today
+
     const dateInput = document.getElementById('appointmentDate');
     if (dateInput) {
         dateInput.value = PHCApp.currentDate;
         dateInput.min = PHCApp.currentDate;
     }
-    
-    // Populate time slots
+
     populateTimeSlots();
 }
 
-// ========== UI INITIALIZATION ==========
 function initializeUI() {
-    // Set current date in admin panel
     const currentDateSpan = document.getElementById('currentDate');
     if (currentDateSpan) {
         currentDateSpan.textContent = new Date().toLocaleDateString('en-IN', {
@@ -270,82 +231,60 @@ function initializeUI() {
             day: 'numeric'
         });
     }
-    
-    // Update all views
+
     updateAllViews();
 }
 
-// ========== VIEW NAVIGATION ==========
 function showView(viewName) {
-    // Hide all views
-    document.querySelectorAll('.view').forEach(view => {
-        view.classList.remove('active');
-    });
-    
-    // Remove active class from all nav buttons
-    document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    
-    // Show selected view
+    document.querySelectorAll('.view').forEach(view => view.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+
     const selectedView = document.getElementById(viewName + 'View');
     if (selectedView) {
         selectedView.classList.add('active');
     }
-    
-    // Activate corresponding nav button
+
     const navButtons = document.querySelectorAll('.nav-btn');
-    const viewIndex = { 'patient': 0, 'admin': 1, 'tv': 2 }[viewName] || 0;
+    const viewIndex = { patient: 0, admin: 1, tv: 2 }[viewName] || 0;
     if (navButtons[viewIndex]) {
         navButtons[viewIndex].classList.add('active');
     }
-    
-    // Update view-specific content
-    if (viewName === 'tv') {
-        updateTVDisplay();
-    } else if (viewName === 'admin') {
-        checkAdminAuth();
-    }
+
+    if (viewName === 'tv') updateTVDisplay();
+    else if (viewName === 'admin') checkAdminAuth();
 }
 
-// ========== PATIENT FUNCTIONS ==========
 function bookAppointment() {
-    // Get form values
     const patientName = document.getElementById('patientName')?.value.trim();
     const patientPhone = document.getElementById('patientPhone')?.value.trim();
     const doctorSelect = document.getElementById('doctorSelect')?.value;
     const appointmentDate = document.getElementById('appointmentDate')?.value;
     const timeSlot = document.getElementById('timeSlot')?.value;
-    
-    // Validate required fields
+
     if (!patientName) {
         showNotification('❌ Please enter patient name', 'error');
         return;
     }
-    
+
     if (!doctorSelect) {
         showNotification('❌ Please select a doctor', 'error');
         return;
     }
-    
+
     if (!timeSlot) {
         showNotification('❌ Please select a time slot', 'error');
         return;
     }
-    
-    // Parse doctor selection
+
     const [doctorName, department] = doctorSelect.split(' - ');
-    
-    // Determine token prefix
+
     let prefix = 'MED';
     if (doctorName.includes('Patil')) prefix = 'PED';
     if (doctorName.includes('Rao')) prefix = 'GEN';
-    
-    // Generate token number
+
     PHCApp.tokenCounters[prefix]++;
     const tokenNumber = prefix + String(PHCApp.tokenCounters[prefix]).padStart(3, '0');
-    
-    // Create new appointment
+
     const newAppointment = {
         id: tokenNumber,
         patientName: patientName,
@@ -358,23 +297,13 @@ function bookAppointment() {
         tokenPrefix: prefix,
         createdAt: new Date().toISOString()
     };
-    
-    // Add to appointments
+
     PHCApp.appointments.push(newAppointment);
-    
-    // Save to storage
     saveToStorage();
-    
-    // Update UI
     updateAllViews();
-    
-    // Show confirmation
     displayConfirmation(newAppointment);
-    
-    // Show success notification
     showNotification(`✅ Token ${tokenNumber} generated successfully!`, 'success');
-    
-    // Clear form
+
     document.getElementById('patientName').value = '';
     document.getElementById('patientPhone').value = '';
 }
@@ -382,11 +311,9 @@ function bookAppointment() {
 function displayConfirmation(appointment) {
     const tokenDisplay = document.getElementById('tokenDisplay');
     const appointmentDetails = document.getElementById('appointmentDetails');
-    
-    if (tokenDisplay) {
-        tokenDisplay.textContent = appointment.id;
-    }
-    
+
+    if (tokenDisplay) tokenDisplay.textContent = appointment.id;
+
     if (appointmentDetails) {
         appointmentDetails.innerHTML = `
             <div style="background: #e8f4fd; padding: 20px; border-radius: 10px; margin-top: 15px;">
@@ -409,7 +336,7 @@ function displayConfirmation(appointment) {
 function printToken(tokenId) {
     const appointment = PHCApp.appointments.find(a => a.id === tokenId);
     if (!appointment) return;
-    
+
     const printWindow = window.open('', '_blank');
     printWindow.document.write(`
         <html>
@@ -441,41 +368,40 @@ function printToken(tokenId) {
 function trackToken() {
     const tokenId = document.getElementById('trackTokenId')?.value.toUpperCase().trim();
     const resultDiv = document.getElementById('trackingResult');
-    
+
     if (!tokenId) {
         resultDiv.innerHTML = '<p style="color: #dc3545;">❌ Please enter a token number</p>';
         return;
     }
-    
+
     const appointment = PHCApp.appointments.find(a => a.id === tokenId);
-    
+
     if (!appointment) {
         resultDiv.innerHTML = '<p style="color: #dc3545;">❌ Token not found</p>';
         return;
     }
-    
-    // Calculate queue position
-    const sameDoctorWaiting = PHCApp.appointments.filter(a => 
-        a.doctor === appointment.doctor && 
+
+    const sameDoctorWaiting = PHCApp.appointments.filter(a =>
+        a.doctor === appointment.doctor &&
         a.status === 'waiting' &&
         new Date(a.createdAt) < new Date(appointment.createdAt)
     ).length;
-    
+
     const queuePosition = appointment.status === 'waiting' ? sameDoctorWaiting + 1 : 0;
-    const waitTime = queuePosition * 15; // 15 minutes per patient
-    
-    let statusEmoji = {
-        'waiting': '⏳',
+    const waitTime = queuePosition * 15;
+
+    const statusEmoji = {
+        waiting: '⏳',
         'with-doctor': '👨‍⚕️',
-        'completed': '✅'
+        completed: '✅'
     }[appointment.status] || '❓';
-    
+
     resultDiv.innerHTML = `
         <div class="tracking-result" style="background: #e8f4fd; padding: 20px; border-radius: 10px; margin-top: 15px;">
             <p style="font-size: 1.5em; font-weight: bold; color: #1e3c72;">${statusEmoji} ${appointment.id}</p>
             <p><strong>Patient:</strong> ${appointment.patientName}</p>
             <p><strong>Doctor:</strong> ${appointment.doctor}</p>
-            <p><strong>Status:</strong> 
+            <p><strong>Status:</strong>
                 <span style="color: ${appointment.status === 'waiting' ? '#ffc107' : appointment.status === 'with-doctor' ? '#28a745' : '#666'};">
                     ${appointment.status.toUpperCase()}
                 </span>
@@ -484,7 +410,7 @@ function trackToken() {
                 <p><strong>Position in queue:</strong> ${queuePosition}</p>
                 <p><strong>Estimated wait:</strong> ${waitTime} minutes</p>
                 <div class="progress-bar" style="background: #ddd; height: 10px; border-radius: 5px; margin: 15px 0;">
-                    <div style="background: #1e3c72; height: 10px; border-radius: 5px; width: ${Math.max(0, 100 - (queuePosition-1)*20)}%"></div>
+                    <div style="background: #1e3c72; height: 10px; border-radius: 5px; width: ${Math.max(0, 100 - (queuePosition - 1) * 20)}%"></div>
                 </div>
             ` : appointment.status === 'with-doctor' ? `
                 <p><strong>Currently with doctor</strong></p>
@@ -496,71 +422,55 @@ function trackToken() {
     `;
 }
 
-// ========== ADMIN FUNCTIONS ==========
 function adminLogin() {
     const password = document.getElementById('adminPassword')?.value;
-    
-    // Hardcoded password for demo
-    if (password === 'phc123') {
+
+    if (password && password.trim().length > 0) {
         PHCApp.isAdminLoggedIn = true;
-        
-        // Hide login, show dashboard
+
         document.getElementById('adminLogin').classList.add('hidden');
         document.getElementById('adminDashboard').classList.remove('hidden');
-        
-        // Update admin queue
+
         updateAdminQueue();
-        
-        showNotification('✅ Admin login successful', 'success');
+        showNotification('✅ Demo admin access enabled for this public prototype.', 'success');
     } else {
-        showNotification('❌ Incorrect password', 'error');
+        showNotification('⚠️ Public demo mode: enter any non-empty value to simulate admin access.', 'info');
     }
 }
 
 function logoutAdmin() {
     PHCApp.isAdminLoggedIn = false;
-    
+
     document.getElementById('adminLogin').classList.remove('hidden');
     document.getElementById('adminDashboard').classList.add('hidden');
     document.getElementById('adminPassword').value = '';
-    
+
     showNotification('👋 Logged out successfully', 'info');
 }
 
 function updateAppointmentStatus(tokenId, newStatus) {
     const appointment = PHCApp.appointments.find(a => a.id === tokenId);
-    
+
     if (appointment) {
         const oldStatus = appointment.status;
         appointment.status = newStatus;
-        
+
         saveToStorage();
-        
-        // DIRECT DOM UPDATE - Replace updateAllViews() with this:
-        // Update TV display (always works)
         updateTVDisplay();
-        
-        // Directly update admin queue without checking login
+
         const doctors = {
             'Dr. Sharma': 'sharmaQueue',
             'Dr. Patil': 'patilQueue',
             'Dr. Rao': 'raoQueue'
         };
-        
-        // Update each doctor's queue directly
+
         for (let [doctor, elementId] of Object.entries(doctors)) {
-            const doctorAppointments = PHCApp.appointments.filter(a => 
-                a.doctor === doctor && 
-                a.date === PHCApp.currentDate
-            );
-            
+            const doctorAppointments = PHCApp.appointments.filter(a => a.doctor === doctor && a.date === PHCApp.currentDate);
             const withDoctor = doctorAppointments.find(a => a.status === 'with-doctor');
-            const waiting = doctorAppointments.filter(a => a.status === 'waiting')
-                .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-            
+            const waiting = doctorAppointments.filter(a => a.status === 'waiting').sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+
             let html = '';
-            
-            // Current patient
+
             if (withDoctor) {
                 html += `
                     <div class="token-card with-doctor" style="border-left-color: #28a745; background: #f0fff0;">
@@ -569,16 +479,14 @@ function updateAppointmentStatus(tokenId, newStatus) {
                             <div style="font-size: 0.9em; color: #666;">${withDoctor.timeSlot}</div>
                         </div>
                         <div class="token-actions">
-                            <button class="btn-complete" onclick="updateAppointmentStatus('${withDoctor.id}', 'completed')" 
-                                    style="background: #28a745; color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer;">
+                            <button class="btn-complete" onclick="updateAppointmentStatus('${withDoctor.id}', 'completed')" style="background: #28a745; color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer;">
                                 ✓ Complete
                             </button>
                         </div>
                     </div>
                 `;
             }
-            
-            // Waiting patients
+
             waiting.forEach((apt, index) => {
                 html += `
                     <div class="token-card waiting" style="border-left-color: #ffc107; background: #fff9e6;">
@@ -588,37 +496,32 @@ function updateAppointmentStatus(tokenId, newStatus) {
                             <div style="font-size: 0.8em; color: #999;">Position: ${index + 1}</div>
                         </div>
                         <div class="token-actions">
-                            <button class="btn-call" onclick="updateAppointmentStatus('${apt.id}', 'with-doctor')" 
-                                    style="background: #1e3c72; color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; margin-right: 5px;">
+                            <button class="btn-call" onclick="updateAppointmentStatus('${apt.id}', 'with-doctor')" style="background: #1e3c72; color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; margin-right: 5px;">
                                 📞 Call
                             </button>
-                            <button class="btn-cancel" onclick="updateAppointmentStatus('${apt.id}', 'completed')" 
-                                    style="background: #dc3545; color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer;">
+                            <button class="btn-cancel" onclick="updateAppointmentStatus('${apt.id}', 'completed')" style="background: #dc3545; color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer;">
                                 ✗ Skip
                             </button>
                         </div>
                     </div>
                 `;
             });
-            
+
             if (!withDoctor && waiting.length === 0) {
                 html = '<p style="color: #666; padding: 20px; text-align: center;">No patients in queue</p>';
             }
-            
+
             const queueElement = document.getElementById(elementId);
-            if (queueElement) {
-                queueElement.innerHTML = html;
-            }
+            if (queueElement) queueElement.innerHTML = html;
         }
-        
-        // Update stats
+
         document.getElementById('totalToday').textContent = PHCApp.appointments.length;
         document.getElementById('totalWaiting').textContent = PHCApp.appointments.filter(a => a.status === 'waiting').length;
         document.getElementById('totalWithDoctor').textContent = PHCApp.appointments.filter(a => a.status === 'with-doctor').length;
         document.getElementById('totalCompleted').textContent = PHCApp.appointments.filter(a => a.status === 'completed').length;
-        
+
         showNotification(`✅ Token ${tokenId} marked as ${newStatus}`, 'success');
-        
+
         if (newStatus === 'with-doctor' && oldStatus === 'waiting') {
             announceToken(tokenId);
         }
@@ -628,12 +531,9 @@ function updateAppointmentStatus(tokenId, newStatus) {
 function announceToken(tokenId) {
     const appointment = PHCApp.appointments.find(a => a.id === tokenId);
     if (!appointment) return;
-    
-    // Use browser's speech synthesis if available
+
     if ('speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance(
-            `Token number ${tokenId}, please proceed to ${appointment.doctor}`
-        );
+        const utterance = new SpeechSynthesisUtterance(`Token number ${tokenId}, please proceed to ${appointment.doctor}`);
         utterance.lang = 'en-US';
         utterance.rate = 0.9;
         window.speechSynthesis.speak(utterance);
@@ -641,11 +541,9 @@ function announceToken(tokenId) {
 }
 
 function callNextPatient(doctorName) {
-    const waitingPatients = PHCApp.appointments.filter(a => 
-        a.doctor === doctorName && 
-        a.status === 'waiting'
-    ).sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-    
+    const waitingPatients = PHCApp.appointments.filter(a => a.doctor === doctorName && a.status === 'waiting')
+        .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+
     if (waitingPatients.length > 0) {
         updateAppointmentStatus(waitingPatients[0].id, 'with-doctor');
     } else {
@@ -653,42 +551,32 @@ function callNextPatient(doctorName) {
     }
 }
 
-// ========== ADMIN QUEUE DISPLAY ==========
 function updateAdminQueue() {
     if (!PHCApp.isAdminLoggedIn) return;
-    
+
     const doctors = {
         'Dr. Sharma': 'sharmaQueue',
         'Dr. Patil': 'patilQueue',
         'Dr. Rao': 'raoQueue'
     };
-    
-    // Update statistics
+
     const totalToday = PHCApp.appointments.length;
     const totalWaiting = PHCApp.appointments.filter(a => a.status === 'waiting').length;
     const totalWithDoctor = PHCApp.appointments.filter(a => a.status === 'with-doctor').length;
     const totalCompleted = PHCApp.appointments.filter(a => a.status === 'completed').length;
-    
+
     document.getElementById('totalToday').textContent = totalToday;
     document.getElementById('totalWaiting').textContent = totalWaiting;
     document.getElementById('totalWithDoctor').textContent = totalWithDoctor;
     document.getElementById('totalCompleted').textContent = totalCompleted;
-    
-    // Update each doctor's queue
+
     for (let [doctor, elementId] of Object.entries(doctors)) {
-        const doctorAppointments = PHCApp.appointments.filter(a => 
-            a.doctor === doctor && 
-            a.date === PHCApp.currentDate
-        );
-        
+        const doctorAppointments = PHCApp.appointments.filter(a => a.doctor === doctor && a.date === PHCApp.currentDate);
         const withDoctor = doctorAppointments.find(a => a.status === 'with-doctor');
-        const waiting = doctorAppointments.filter(a => a.status === 'waiting')
-            .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-        const completed = doctorAppointments.filter(a => a.status === 'completed');
-        
+        const waiting = doctorAppointments.filter(a => a.status === 'waiting').sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+
         let html = '';
-        
-        // Current patient
+
         if (withDoctor) {
             html += `
                 <div class="token-card with-doctor" style="border-left-color: #28a745; background: #f0fff0;">
@@ -697,16 +585,14 @@ function updateAdminQueue() {
                         <div style="font-size: 0.9em; color: #666;">${withDoctor.timeSlot}</div>
                     </div>
                     <div class="token-actions">
-                        <button class="btn-complete" onclick="updateAppointmentStatus('${withDoctor.id}', 'completed')" 
-                                style="background: #28a745; color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer;">
+                        <button class="btn-complete" onclick="updateAppointmentStatus('${withDoctor.id}', 'completed')" style="background: #28a745; color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer;">
                             ✓ Complete
                         </button>
                     </div>
                 </div>
             `;
         }
-        
-        // Waiting patients
+
         waiting.forEach((apt, index) => {
             html += `
                 <div class="token-card waiting" style="border-left-color: #ffc107; background: #fff9e6;">
@@ -716,46 +602,34 @@ function updateAdminQueue() {
                         <div style="font-size: 0.8em; color: #999;">Position: ${index + 1}</div>
                     </div>
                     <div class="token-actions">
-                        <button class="btn-call" onclick="updateAppointmentStatus('${apt.id}', 'with-doctor')" 
-                                style="background: #1e3c72; color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; margin-right: 5px;">
+                        <button class="btn-call" onclick="updateAppointmentStatus('${apt.id}', 'with-doctor')" style="background: #1e3c72; color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; margin-right: 5px;">
                             📞 Call
                         </button>
-                        <button class="btn-cancel" onclick="updateAppointmentStatus('${apt.id}', 'completed')" 
-                                style="background: #dc3545; color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer;">
+                        <button class="btn-cancel" onclick="updateAppointmentStatus('${apt.id}', 'completed')" style="background: #dc3545; color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer;">
                             ✗ Skip
                         </button>
                     </div>
                 </div>
             `;
         });
-        
-        // Show message if no patients
+
         if (!withDoctor && waiting.length === 0) {
             html = '<p style="color: #666; padding: 20px; text-align: center;">No patients in queue</p>';
         }
-        
+
         const queueElement = document.getElementById(elementId);
-        if (queueElement) {
-            queueElement.innerHTML = html;
-        }
+        if (queueElement) queueElement.innerHTML = html;
     }
 }
 
-// ========== TV DISPLAY FUNCTIONS ==========
 function updateTVDisplay() {
     const todayAppointments = PHCApp.appointments.filter(a => a.date === PHCApp.currentDate);
-    
-    // Current serving (with doctor)
     const withDoctor = todayAppointments.find(a => a.status === 'with-doctor');
-    
-    // Waiting queue
-    const waiting = todayAppointments.filter(a => a.status === 'waiting')
-        .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-    
-    // Update now serving
+    const waiting = todayAppointments.filter(a => a.status === 'waiting').sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+
     const currentTokenDisplay = document.getElementById('currentTokenDisplay');
     const currentDoctorDisplay = document.getElementById('currentDoctorDisplay');
-    
+
     if (withDoctor) {
         currentTokenDisplay.textContent = withDoctor.id;
         currentDoctorDisplay.textContent = `${withDoctor.doctor} - ${withDoctor.department}`;
@@ -763,11 +637,10 @@ function updateTVDisplay() {
         currentTokenDisplay.textContent = '---';
         currentDoctorDisplay.textContent = 'No patient currently';
     }
-    
-    // Update next 3
+
     const nextTokens = ['next1Token', 'next2Token', 'next3Token'];
     const nextDoctors = ['next1Doctor', 'next2Doctor', 'next3Doctor'];
-    
+
     for (let i = 0; i < 3; i++) {
         if (waiting[i]) {
             document.getElementById(nextTokens[i]).textContent = waiting[i].id;
@@ -777,18 +650,15 @@ function updateTVDisplay() {
             document.getElementById(nextDoctors[i]).textContent = '';
         }
     }
-    
-    // Update stats
+
     document.getElementById('tvQueueCount').textContent = waiting.length;
     document.getElementById('tvTimestamp').textContent = new Date().toLocaleTimeString();
-    
-    // Calculate average wait time
+
     const avgWait = waiting.length > 0 ? Math.round(waiting.length * 15 / 2) : 0;
     document.getElementById('tvAvgWait').textContent = avgWait + ' min';
 }
 
 function startTVRefresh() {
-    // Update TV display every 5 seconds
     setInterval(() => {
         if (document.getElementById('tvView').classList.contains('active')) {
             updateTVDisplay();
@@ -796,26 +666,20 @@ function startTVRefresh() {
     }, 5000);
 }
 
-// ========== HELPER FUNCTIONS ==========
 function showNotification(message, type = 'success') {
-    // Remove existing notification
     const existingNotif = document.querySelector('.notification');
-    if (existingNotif) {
-        existingNotif.remove();
-    }
-    
-    // Create notification element
+    if (existingNotif) existingNotif.remove();
+
     const notification = document.createElement('div');
     notification.className = 'notification';
-    
-    // Style based on type
+
     const colors = {
-        'success': '#28a745',
-        'error': '#dc3545',
-        'info': '#17a2b8',
-        'warning': '#ffc107'
+        success: '#28a745',
+        error: '#dc3545',
+        info: '#17a2b8',
+        warning: '#ffc107'
     };
-    
+
     notification.style.cssText = `
         position: fixed;
         top: 20px;
@@ -830,22 +694,17 @@ function showNotification(message, type = 'success') {
         font-weight: 600;
         font-size: 1.1em;
     `;
-    
+
     notification.textContent = message;
     document.body.appendChild(notification);
-    
-    // Remove after 3 seconds
-    setTimeout(() => {
-        notification.remove();
-    }, 3000);
+
+    setTimeout(() => notification.remove(), 3000);
 }
 
 function populateTimeSlots() {
     const timeSlotSelect = document.getElementById('timeSlot');
     if (timeSlotSelect) {
-        timeSlotSelect.innerHTML = PHCApp.timeSlots.map(slot => 
-            `<option value="${slot}">${slot}</option>`
-        ).join('');
+        timeSlotSelect.innerHTML = PHCApp.timeSlots.map(slot => `<option value="${slot}">${slot}</option>`).join('');
     }
 }
 
@@ -865,12 +724,11 @@ function checkAdminAuth() {
     }
 }
 
-// ========== SEARCH AND FILTER FUNCTIONS ==========
 function searchAppointments(searchTerm) {
     if (!searchTerm) return PHCApp.appointments;
-    
+
     searchTerm = searchTerm.toLowerCase();
-    return PHCApp.appointments.filter(apt => 
+    return PHCApp.appointments.filter(apt =>
         apt.id.toLowerCase().includes(searchTerm) ||
         apt.patientName.toLowerCase().includes(searchTerm) ||
         apt.doctor.toLowerCase().includes(searchTerm)
@@ -889,10 +747,9 @@ function getAppointmentsByStatus(status) {
     return PHCApp.appointments.filter(a => a.status === status);
 }
 
-// ========== STATISTICS FUNCTIONS ==========
 function getTodayStats() {
     const today = PHCApp.appointments.filter(a => a.date === PHCApp.currentDate);
-    
+
     return {
         total: today.length,
         waiting: today.filter(a => a.status === 'waiting').length,
@@ -903,16 +760,14 @@ function getTodayStats() {
 }
 
 function calculateAverageWaitTime(appointments) {
-    // This is a simplified calculation
-    // In reality, you'd track actual wait times
     const waiting = appointments.filter(a => a.status === 'waiting').length;
-    return waiting * 15; // 15 minutes per patient
+    return waiting * 15;
 }
 
 function getDoctorWorkload() {
     const today = PHCApp.appointments.filter(a => a.date === PHCApp.currentDate);
     const doctors = {};
-    
+
     today.forEach(apt => {
         if (!doctors[apt.doctor]) {
             doctors[apt.doctor] = {
@@ -925,11 +780,10 @@ function getDoctorWorkload() {
         if (apt.status === 'waiting') doctors[apt.doctor].waiting++;
         if (apt.status === 'completed') doctors[apt.doctor].completed++;
     });
-    
+
     return doctors;
 }
 
-// ========== EXPORT FUNCTIONS ==========
 function exportToCSV() {
     const headers = ['Token ID', 'Patient Name', 'Doctor', 'Department', 'Time Slot', 'Date', 'Status', 'Created At'];
     const csvData = PHCApp.appointments.map(apt => [
@@ -942,22 +796,21 @@ function exportToCSV() {
         apt.status,
         apt.createdAt
     ]);
-    
+
     const csvContent = [headers, ...csvData]
         .map(row => row.join(','))
         .join('\n');
-    
+
     const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
     a.download = `phc-connect-${PHCApp.currentDate}.csv`;
     a.click();
-    
+
     showNotification('📊 Data exported to CSV', 'success');
 }
 
-// ========== RESET FUNCTIONS ==========
 function resetDailyData() {
     if (confirm('⚠️ This will clear all appointments for today. Are you sure?')) {
         PHCApp.appointments = PHCApp.appointments.filter(a => a.date !== PHCApp.currentDate);
@@ -978,8 +831,6 @@ function resetAllData() {
     }
 }
 
-// ========== EXPOSE GLOBALLY ==========
-// Make functions available to HTML onclick handlers
 window.showView = showView;
 window.bookAppointment = bookAppointment;
 window.trackToken = trackToken;
@@ -991,3 +842,16 @@ window.printToken = printToken;
 window.exportToCSV = exportToCSV;
 window.resetDailyData = resetDailyData;
 window.resetAllData = resetAllData;
+
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes fadeOut {
+        from { opacity: 1; }
+        to { opacity: 0; }
+    }
+`;
+document.head.appendChild(style);
